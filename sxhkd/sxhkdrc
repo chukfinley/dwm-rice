@@ -94,18 +94,18 @@ super + v
 #super + m
 #    pragha
 
-#alacritty
+#alacritty (with DPI-aware font scaling)
 super + Return
-    alacritty
+    ~/.config/dwm/scripts/alacritty-launch.sh
 
 #Xkill
 super + Escape
     xkill
 
 #Keyboard dependent
-#alacritty
+#alacritty (with DPI-aware font scaling)
 super + KP_Enter
-	alacritty
+	~/.config/dwm/scripts/alacritty-launch.sh
 
 #################################################################
 # SUPER + SHIFT KEYS
@@ -201,9 +201,9 @@ ctrl + alt + s
 ctrl + alt + Return
     st
 
-#alacritty
+#alacritty (with DPI-aware font scaling)
 ctrl + alt + t
-    alacritty
+    ~/.config/dwm/scripts/alacritty-launch.sh
 
 #Vivaldi
 ctrl + alt + v

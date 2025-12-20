@@ -19,7 +19,7 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 # Install dependencies
-echo "[1/5] Installing dependencies..."
+echo "[1/6] Installing dependencies..."
 sudo apt update
 sudo apt install -y \
     build-essential \
@@ -43,36 +43,50 @@ sudo apt install -y \
     pulseaudio-utils
 
 echo ""
-echo "[2/5] Building and installing dwm..."
+echo "[2/6] Building and installing dwm..."
 cd "$SCRIPT_DIR/dwm"
 make clean
 make
 sudo make install
 
 echo ""
-echo "[3/5] Building and installing dmenu..."
+echo "[3/6] Building and installing dmenu..."
 cd "$SCRIPT_DIR/dmenu"
 make clean
 make
 sudo make install
 
 echo ""
-echo "[4/5] Building and installing slstatus..."
+echo "[4/6] Building and installing slstatus..."
 cd "$SCRIPT_DIR/slstatus"
 make clean
 make
 sudo make install
 
 echo ""
-echo "[5/5] Setting up configuration..."
+echo "[5/6] Building and installing slock (with theming)..."
+cd "$SCRIPT_DIR/slock"
+make clean
+make
+sudo make install
+
+echo ""
+echo "[6/6] Setting up configuration..."
 
 # Create config directory
 mkdir -p "$CONFIG_DIR/scripts"
 mkdir -p "$CONFIG_DIR/sxhkd"
 
 # Copy scripts
-cp "$SCRIPT_DIR/scripts/"* "$CONFIG_DIR/scripts/"
+cp "$SCRIPT_DIR/scripts/"*.sh "$CONFIG_DIR/scripts/"
 chmod +x "$CONFIG_DIR/scripts/"*
+
+# Install monitor hotplug udev rule
+echo "Setting up monitor hotplug detection..."
+sudo cp "$SCRIPT_DIR/scripts/monitor-hotplug-trigger" /usr/local/bin/
+sudo chmod +x /usr/local/bin/monitor-hotplug-trigger
+sudo cp "$SCRIPT_DIR/scripts/95-monitor-hotplug.rules" /etc/udev/rules.d/
+sudo udevadm control --reload-rules
 
 # Copy autostart and picom
 cp "$SCRIPT_DIR/autostart.sh" "$CONFIG_DIR/"

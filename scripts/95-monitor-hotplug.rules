@@ -1,0 +1,3 @@
+# Trigger monitor-hotplug.sh when displays change
+# Install to /etc/udev/rules.d/95-monitor-hotplug.rules
+ACTION=="change", SUBSYSTEM=="drm", RUN+="/usr/local/bin/monitor-hotplug-trigger"

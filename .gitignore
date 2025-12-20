@@ -8,3 +8,5 @@ slstatus/slstatus
 # Backup files
 *.bak
 *~
+slock/slock
+slock/*.o

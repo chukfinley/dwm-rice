@@ -1,0 +1,18 @@
+#!/bin/bash
+# Trigger script for udev - runs the actual hotplug script as the logged in user
+# This runs as root from udev, so we need to find the user and run as them
+
+# Find the active X user
+USER=$(who | grep -m1 '(:' | awk '{print $1}')
+[[ -z "$USER" ]] && USER=$(logname 2>/dev/null)
+[[ -z "$USER" ]] && exit 0
+
+DISPLAY=:0
+XAUTHORITY="/home/$USER/.Xauthority"
+export DISPLAY XAUTHORITY
+
+# Small delay for hardware to settle
+sleep 1
+
+# Run the hotplug script as the user
+su - "$USER" -c "DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY /home/$USER/.config/dwm/scripts/monitor-hotplug.sh" &

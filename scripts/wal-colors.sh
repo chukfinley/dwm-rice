@@ -91,6 +91,10 @@ dmenu.normfg: $fg
 dmenu.normbg: $bg
 dmenu.selfg: #eeeeee
 dmenu.selbg: $accent
+slock.color0: $bg
+slock.color1: $(darken "$accent" 30)
+slock.color2: $accent
+slock.color3: $bg
 EOF
 
 # Apply to X and signal dwm
@@ -248,95 +252,57 @@ if [[ -f "$CURSOR_SETTINGS" ]]; then
     fi
 fi
 
-# Update Spicetify (Spotify) theme
-SPICETIFY_THEMES="$HOME/.config/spicetify/Themes"
-if command -v spicetify &>/dev/null; then
-    mkdir -p "$SPICETIFY_THEMES/Wallpaper"
-    cat > "$SPICETIFY_THEMES/Wallpaper/color.ini" << EOF
-[Base]
-main_fg                               = ${fg#\#}
-secondary_fg                          = ${fg_dim#\#}
-main_bg                               = ${bg#\#}
-sidebar_and_player_bg                 = ${bg_dark#\#}
-cover_overlay_and_shadow              = 000000
-indicator_fg_and_button_bg            = ${accent#\#}
-pressing_fg                           = ${accent_dark#\#}
-slider_bg                             = ${bg_lighter#\#}
-sidebar_indicator_and_hover_button_bg = ${accent#\#}
-scrollbar_fg_and_selected_row_bg      = ${bg_light#\#}
-pressing_button_fg                    = ${accent_light#\#}
-pressing_button_bg                    = ${accent_dark#\#}
-selected_button                       = ${accent#\#}
-miscellaneous_bg                      = ${bg_light#\#}
-miscellaneous_hover_bg                = ${bg_lighter#\#}
-preserve_1                            = ${accent#\#}
-EOF
-    cat > "$SPICETIFY_THEMES/Wallpaper/user.css" << EOF
-/* Wallpaper theme - auto-generated */
-EOF
-    spicetify config current_theme Wallpaper 2>/dev/null
-    spicetify apply 2>/dev/null && echo "Spotify theme updated!" || echo "Spotify: run 'spicetify apply' manually"
-else
-    # Save theme for later use
-    mkdir -p "$CACHE_DIR/spicetify"
-    cat > "$CACHE_DIR/spicetify/color.ini" << EOF
-[Base]
-main_fg                               = ${fg#\#}
-secondary_fg                          = ${fg_dim#\#}
-main_bg                               = ${bg#\#}
-sidebar_and_player_bg                 = ${bg_dark#\#}
-cover_overlay_and_shadow              = 000000
-indicator_fg_and_button_bg            = ${accent#\#}
-pressing_fg                           = ${accent_dark#\#}
-slider_bg                             = ${bg_lighter#\#}
-sidebar_indicator_and_hover_button_bg = ${accent#\#}
-scrollbar_fg_and_selected_row_bg      = ${bg_light#\#}
-pressing_button_fg                    = ${accent_light#\#}
-pressing_button_bg                    = ${accent_dark#\#}
-selected_button                       = ${accent#\#}
-miscellaneous_bg                      = ${bg_light#\#}
-miscellaneous_hover_bg                = ${bg_lighter#\#}
-preserve_1                            = ${accent#\#}
-EOF
-    echo "Spotify theme saved to $CACHE_DIR/spicetify/ (install spicetify to apply)"
-fi
 
 # Update Discord (BetterDiscord/Vencord) theme
 BETTERDISCORD_THEMES="$HOME/.config/BetterDiscord/themes"
 VENCORD_THEMES="$HOME/.config/Vencord/themes"
-DISCORD_CSS="
-/**
+bg_tertiary=$(darken "$bg" 15)
+DISCORD_CSS="/**
  * @name Wallpaper Theme
  * @description Auto-generated theme from wallpaper
  * @author wal-colors.sh
  * @version 1.0.0
  */
 
-:root {
-    --background-primary: $bg;
-    --background-secondary: $bg_dark;
-    --background-secondary-alt: $bg_dark;
-    --background-tertiary: $(darken "$bg" 15);
-    --background-accent: $accent;
-    --background-floating: $bg_dark;
-    --background-modifier-hover: ${bg_light};
-    --background-modifier-active: ${bg_lighter};
-    --background-modifier-selected: ${bg_light};
-    --background-modifier-accent: ${accent}20;
-    --text-normal: $fg;
-    --text-muted: $fg_dim;
-    --text-link: $accent_light;
-    --interactive-normal: $fg;
-    --interactive-hover: $fg;
-    --interactive-active: #ffffff;
-    --interactive-muted: $fg_dim;
-    --header-primary: $fg;
-    --header-secondary: $fg_dim;
-    --brand-experiment: $accent;
-    --brand-experiment-560: $accent;
-    --scrollbar-thin-thumb: $bg_lighter;
-    --scrollbar-auto-thumb: $bg_lighter;
-    --channeltextarea-background: $bg_light;
+:root, .theme-dark, .theme-light {
+    --background-primary: $bg !important;
+    --background-secondary: $bg_dark !important;
+    --background-secondary-alt: $bg_dark !important;
+    --background-tertiary: $bg_tertiary !important;
+    --background-accent: $accent !important;
+    --background-floating: $bg_dark !important;
+    --background-modifier-hover: $bg_light !important;
+    --background-modifier-active: $bg_lighter !important;
+    --background-modifier-selected: $bg_light !important;
+    --background-modifier-accent: ${accent}20 !important;
+    --text-normal: $fg !important;
+    --text-muted: $fg_dim !important;
+    --text-link: $accent_light !important;
+    --interactive-normal: $fg !important;
+    --interactive-hover: $(lighten "$fg" 15) !important;
+    --interactive-active: #ffffff !important;
+    --interactive-muted: $fg_dim !important;
+    --header-primary: $fg !important;
+    --header-secondary: $fg_dim !important;
+    --brand-experiment: $accent !important;
+    --brand-experiment-560: $accent !important;
+    --scrollbar-thin-thumb: $bg_lighter !important;
+    --scrollbar-auto-thumb: $bg_lighter !important;
+    --channeltextarea-background: $bg_light !important;
+    --bg-overlay-1: $bg !important;
+    --bg-overlay-2: $bg_dark !important;
+    --bg-overlay-3: $bg_tertiary !important;
+    --bg-overlay-chat: $bg !important;
+    --activity-card-background: $bg_dark !important;
+    --input-background: $bg_tertiary !important;
+    --modal-background: $bg_dark !important;
+    --modal-footer-background: $bg_tertiary !important;
+}
+
+.theme-dark, .theme-light {
+    --background-primary: $bg !important;
+    --background-secondary: $bg_dark !important;
+    --background-tertiary: $bg_tertiary !important;
 }
 "
 if [[ -d "$BETTERDISCORD_THEMES" ]]; then
