@@ -1,0 +1,10 @@
+# Compiled binaries
+*.o
+dwm/dwm
+dmenu/dmenu
+dmenu/stest
+slstatus/slstatus
+
+# Backup files
+*.bak
+*~
