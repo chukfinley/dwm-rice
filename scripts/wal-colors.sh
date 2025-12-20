@@ -121,3 +121,232 @@ EOF
     fi
     echo "Alacritty colors updated!"
 fi
+
+# Generate additional color variants
+bg_light=$(lighten "$bg" 5)
+bg_lighter=$(lighten "$bg" 10)
+bg_dark=$(darken "$bg" 10)
+accent_dark=$(darken "$accent" 20)
+accent_light=$(lighten "$accent" 20)
+fg_dim=$(darken "$fg" 20)
+
+# Update Zed IDE theme
+ZED_THEMES_DIR="$HOME/.config/zed/themes"
+if [[ -d "$HOME/.config/zed" ]]; then
+    mkdir -p "$ZED_THEMES_DIR"
+    cat > "$ZED_THEMES_DIR/wallpaper-theme.json" << EOF
+{
+  "\$schema": "https://zed.dev/schema/themes/v0.2.0.json",
+  "name": "Wallpaper Theme",
+  "author": "wal-colors.sh",
+  "themes": [
+    {
+      "name": "Wallpaper Dark",
+      "appearance": "dark",
+      "style": {
+        "background": "$bg",
+        "editor.background": "$bg",
+        "editor.foreground": "$fg",
+        "editor.gutter.background": "$bg",
+        "editor.active_line.background": "$bg_light",
+        "editor.line_number": "$fg_dim",
+        "editor.active_line_number": "$fg",
+        "terminal.background": "$bg",
+        "terminal.foreground": "$fg",
+        "panel.background": "$bg_dark",
+        "tab_bar.background": "$bg_dark",
+        "tab.active_background": "$bg",
+        "tab.inactive_background": "$bg_dark",
+        "toolbar.background": "$bg",
+        "status_bar.background": "$bg_dark",
+        "title_bar.background": "$bg_dark",
+        "scrollbar.track.background": "$bg",
+        "scrollbar.thumb.background": "$bg_lighter",
+        "element.selected": "$bg_light",
+        "element.hover": "$bg_lighter",
+        "element.active": "$accent",
+        "text": "$fg",
+        "text.muted": "$fg_dim",
+        "text.accent": "$accent",
+        "icon": "$fg",
+        "icon.accent": "$accent",
+        "border": "$border",
+        "border.focused": "$accent",
+        "border.selected": "$accent",
+        "link_text.hover": "$accent_light",
+        "players": [
+          {"cursor": "$accent", "background": "$accent", "selection": "${accent}40"}
+        ],
+        "syntax": {
+          "keyword": {"color": "$accent"},
+          "function": {"color": "$accent_light"},
+          "string": {"color": "$(lighten "$accent" 30)"},
+          "comment": {"color": "$fg_dim"},
+          "number": {"color": "$accent"},
+          "type": {"color": "$accent_light"},
+          "variable": {"color": "$fg"}
+        }
+      }
+    }
+  ]
+}
+EOF
+    # Update Zed settings to use our theme
+    ZED_SETTINGS="$HOME/.config/zed/settings.json"
+    if [[ -f "$ZED_SETTINGS" ]]; then
+        # Zed settings may have comments, use sed instead of jq
+        if grep -q '"theme"' "$ZED_SETTINGS"; then
+            # Replace existing theme block
+            sed -i '/"theme":/,/^  }/c\  "theme": {\n    "mode": "dark",\n    "dark": "Wallpaper Dark",\n    "light": "Wallpaper Dark"\n  }' "$ZED_SETTINGS"
+        else
+            # Add theme before closing brace
+            sed -i 's/^}$/  ,"theme": {\n    "mode": "dark",\n    "dark": "Wallpaper Dark",\n    "light": "Wallpaper Dark"\n  }\n}/' "$ZED_SETTINGS"
+        fi
+    fi
+    echo "Zed theme updated!"
+fi
+
+# Update Cursor IDE colors
+CURSOR_SETTINGS="$HOME/.config/Cursor/User/settings.json"
+if [[ -f "$CURSOR_SETTINGS" ]]; then
+    if command -v jq &>/dev/null; then
+        tmp=$(mktemp)
+        jq --arg bg "$bg" --arg fg "$fg" --arg accent "$accent" --arg border "$border" \
+           --arg bg_light "$bg_light" --arg bg_dark "$bg_dark" --arg fg_dim "$fg_dim" \
+           '.["workbench.colorCustomizations"] = {
+              "editor.background": $bg,
+              "editor.foreground": $fg,
+              "editorCursor.foreground": $accent,
+              "editorLineNumber.foreground": $fg_dim,
+              "editorLineNumber.activeForeground": $fg,
+              "editor.selectionBackground": ($accent + "40"),
+              "editor.lineHighlightBackground": $bg_light,
+              "sideBar.background": $bg_dark,
+              "sideBar.foreground": $fg,
+              "sideBarTitle.foreground": $fg,
+              "activityBar.background": $bg_dark,
+              "activityBar.foreground": $accent,
+              "statusBar.background": $bg_dark,
+              "statusBar.foreground": $fg,
+              "titleBar.activeBackground": $bg_dark,
+              "titleBar.activeForeground": $fg,
+              "tab.activeBackground": $bg,
+              "tab.inactiveBackground": $bg_dark,
+              "tab.activeForeground": $fg,
+              "tab.border": $border,
+              "terminal.background": $bg,
+              "terminal.foreground": $fg,
+              "panel.background": $bg_dark,
+              "panel.border": $border,
+              "focusBorder": $accent,
+              "list.activeSelectionBackground": $accent,
+              "list.hoverBackground": $bg_light
+           }' "$CURSOR_SETTINGS" > "$tmp" && mv "$tmp" "$CURSOR_SETTINGS"
+        echo "Cursor IDE colors updated!"
+    else
+        echo "Cursor: jq not installed, skipping"
+    fi
+fi
+
+# Update Spicetify (Spotify) theme
+SPICETIFY_THEMES="$HOME/.config/spicetify/Themes"
+if command -v spicetify &>/dev/null; then
+    mkdir -p "$SPICETIFY_THEMES/Wallpaper"
+    cat > "$SPICETIFY_THEMES/Wallpaper/color.ini" << EOF
+[Base]
+main_fg                               = ${fg#\#}
+secondary_fg                          = ${fg_dim#\#}
+main_bg                               = ${bg#\#}
+sidebar_and_player_bg                 = ${bg_dark#\#}
+cover_overlay_and_shadow              = 000000
+indicator_fg_and_button_bg            = ${accent#\#}
+pressing_fg                           = ${accent_dark#\#}
+slider_bg                             = ${bg_lighter#\#}
+sidebar_indicator_and_hover_button_bg = ${accent#\#}
+scrollbar_fg_and_selected_row_bg      = ${bg_light#\#}
+pressing_button_fg                    = ${accent_light#\#}
+pressing_button_bg                    = ${accent_dark#\#}
+selected_button                       = ${accent#\#}
+miscellaneous_bg                      = ${bg_light#\#}
+miscellaneous_hover_bg                = ${bg_lighter#\#}
+preserve_1                            = ${accent#\#}
+EOF
+    cat > "$SPICETIFY_THEMES/Wallpaper/user.css" << EOF
+/* Wallpaper theme - auto-generated */
+EOF
+    spicetify config current_theme Wallpaper 2>/dev/null
+    spicetify apply 2>/dev/null && echo "Spotify theme updated!" || echo "Spotify: run 'spicetify apply' manually"
+else
+    # Save theme for later use
+    mkdir -p "$CACHE_DIR/spicetify"
+    cat > "$CACHE_DIR/spicetify/color.ini" << EOF
+[Base]
+main_fg                               = ${fg#\#}
+secondary_fg                          = ${fg_dim#\#}
+main_bg                               = ${bg#\#}
+sidebar_and_player_bg                 = ${bg_dark#\#}
+cover_overlay_and_shadow              = 000000
+indicator_fg_and_button_bg            = ${accent#\#}
+pressing_fg                           = ${accent_dark#\#}
+slider_bg                             = ${bg_lighter#\#}
+sidebar_indicator_and_hover_button_bg = ${accent#\#}
+scrollbar_fg_and_selected_row_bg      = ${bg_light#\#}
+pressing_button_fg                    = ${accent_light#\#}
+pressing_button_bg                    = ${accent_dark#\#}
+selected_button                       = ${accent#\#}
+miscellaneous_bg                      = ${bg_light#\#}
+miscellaneous_hover_bg                = ${bg_lighter#\#}
+preserve_1                            = ${accent#\#}
+EOF
+    echo "Spotify theme saved to $CACHE_DIR/spicetify/ (install spicetify to apply)"
+fi
+
+# Update Discord (BetterDiscord/Vencord) theme
+BETTERDISCORD_THEMES="$HOME/.config/BetterDiscord/themes"
+VENCORD_THEMES="$HOME/.config/Vencord/themes"
+DISCORD_CSS="
+/**
+ * @name Wallpaper Theme
+ * @description Auto-generated theme from wallpaper
+ * @author wal-colors.sh
+ * @version 1.0.0
+ */
+
+:root {
+    --background-primary: $bg;
+    --background-secondary: $bg_dark;
+    --background-secondary-alt: $bg_dark;
+    --background-tertiary: $(darken "$bg" 15);
+    --background-accent: $accent;
+    --background-floating: $bg_dark;
+    --background-modifier-hover: ${bg_light};
+    --background-modifier-active: ${bg_lighter};
+    --background-modifier-selected: ${bg_light};
+    --background-modifier-accent: ${accent}20;
+    --text-normal: $fg;
+    --text-muted: $fg_dim;
+    --text-link: $accent_light;
+    --interactive-normal: $fg;
+    --interactive-hover: $fg;
+    --interactive-active: #ffffff;
+    --interactive-muted: $fg_dim;
+    --header-primary: $fg;
+    --header-secondary: $fg_dim;
+    --brand-experiment: $accent;
+    --brand-experiment-560: $accent;
+    --scrollbar-thin-thumb: $bg_lighter;
+    --scrollbar-auto-thumb: $bg_lighter;
+    --channeltextarea-background: $bg_light;
+}
+"
+if [[ -d "$BETTERDISCORD_THEMES" ]]; then
+    echo "$DISCORD_CSS" > "$BETTERDISCORD_THEMES/wallpaper.theme.css"
+    echo "BetterDiscord theme updated!"
+elif [[ -d "$VENCORD_THEMES" ]]; then
+    echo "$DISCORD_CSS" > "$VENCORD_THEMES/wallpaper.theme.css"
+    echo "Vencord theme updated!"
+else
+    mkdir -p "$CACHE_DIR/discord"
+    echo "$DISCORD_CSS" > "$CACHE_DIR/discord/wallpaper.theme.css"
+    echo "Discord theme saved to $CACHE_DIR/discord/ (install BetterDiscord/Vencord to apply)"
+fi
