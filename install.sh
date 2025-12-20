@@ -91,6 +91,37 @@ sed -i "s|/home/user|$HOME|g" "$CONFIG_DIR/sxhkd/sxhkdrc"
 # Create wallpaper directory if it doesn't exist
 mkdir -p "$HOME/Pictures/wal"
 
+# Setup Zed IDE config if Zed is installed
+if [[ -d "$HOME/.config/zed" ]] || command -v zed &>/dev/null; then
+    echo "Setting up Zed IDE configuration..."
+    mkdir -p "$HOME/.config/zed/themes"
+
+    # Create Zed settings with larger fonts and theme support
+    if [[ ! -f "$HOME/.config/zed/settings.json" ]]; then
+        cat > "$HOME/.config/zed/settings.json" << 'ZEDEOF'
+{
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "ui_font_size": 18,
+  "buffer_font_size": 16,
+  "theme": {
+    "mode": "dark",
+    "dark": "Wallpaper Dark",
+    "light": "Wallpaper Dark"
+  }
+}
+ZEDEOF
+    else
+        # Update existing settings with jq if available
+        if command -v jq &>/dev/null; then
+            tmp=$(mktemp)
+            jq '.ui_font_size = 18 | .buffer_font_size = 16' "$HOME/.config/zed/settings.json" > "$tmp" && mv "$tmp" "$HOME/.config/zed/settings.json"
+        fi
+    fi
+fi
+
 # Create desktop entry
 echo "Creating desktop entry..."
 sudo tee /usr/share/xsessions/dwm.desktop > /dev/null << EOF
