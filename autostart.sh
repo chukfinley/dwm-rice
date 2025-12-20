@@ -56,6 +56,10 @@ run "flameshot"
 #run dwall -s colony
 #run "telegram-desktop"
 
+# Auto-lock after 3 minutes of inactivity (skips if video/audio playing)
+pkill -x xidlehook; pkill -x xautolock
+~/.config/dwm/scripts/autolock.sh &
+
 # Start dwm
 # Use the local build of dwm (with xrdb live color support)
 exec /home/user/.config/dwm/dwm

@@ -36,7 +36,11 @@ sudo apt install -y \
     numlockx \
     xdotool \
     alacritty \
-    rofi
+    rofi \
+    slock \
+    xautolock \
+    jq \
+    pulseaudio-utils
 
 echo ""
 echo "[2/5] Building and installing dwm..."
@@ -107,8 +111,13 @@ echo "1. Add wallpapers to ~/Pictures/wal/"
 echo "2. Log out and select 'dwm' from your display manager"
 echo ""
 echo "Keybindings:"
-echo "  Alt+Shift+N  - Set random wallpaper + apply colors"
-echo "  Alt+Shift+U  - Reapply colors from current wallpaper"
+echo "  Alt+Shift+N   - Set random wallpaper + apply colors"
+echo "  Alt+Shift+U   - Reapply colors from current wallpaper"
+echo "  Super+W       - Lock screen"
 echo "  Super+Shift+R - Restart dwm"
-echo "  Super+D      - Open dmenu"
+echo "  Super+Shift+D - Open dmenu"
+echo ""
+echo "Auto-lock:"
+echo "  Screen locks after 3 minutes of inactivity"
+echo "  Will NOT lock if video/audio is playing"
 echo ""

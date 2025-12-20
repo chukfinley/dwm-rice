@@ -62,9 +62,9 @@ super + F12
 super + e
     atom
 
-#Browser
+#Lock screen (with multi-monitor handling)
 super + w
-    slock
+    ~/.config/dwm/scripts/lock.sh
 
 #Conky-toggle
 super + c
