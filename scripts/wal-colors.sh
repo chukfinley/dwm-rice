@@ -129,10 +129,291 @@ fi
 # Generate additional color variants
 bg_light=$(lighten "$bg" 5)
 bg_lighter=$(lighten "$bg" 10)
+bg_lightest=$(lighten "$bg" 15)
 bg_dark=$(darken "$bg" 10)
 accent_dark=$(darken "$accent" 20)
 accent_light=$(lighten "$accent" 20)
 fg_dim=$(darken "$fg" 20)
+
+# Update GTK3 theme (Caja, Thunar, etc.)
+GTK3_DIR="$HOME/.config/gtk-3.0"
+mkdir -p "$GTK3_DIR"
+cat > "$GTK3_DIR/gtk.css" << EOF
+/* Auto-generated from wallpaper by wal-colors.sh */
+
+/* Base colors */
+@define-color theme_bg_color $bg;
+@define-color theme_fg_color $fg;
+@define-color theme_base_color $bg_dark;
+@define-color theme_text_color $fg;
+@define-color theme_selected_bg_color $accent;
+@define-color theme_selected_fg_color #ffffff;
+@define-color borders $border;
+@define-color unfocused_borders $bg_lighter;
+
+/* Window and dialog backgrounds */
+window, dialog, .background {
+    background-color: $bg;
+    color: $fg;
+}
+
+/* Header bars and toolbars */
+headerbar, .titlebar, toolbar, .toolbar {
+    background: linear-gradient(to bottom, $bg_light, $bg);
+    border-color: $border;
+    color: $fg;
+}
+
+headerbar:backdrop, .titlebar:backdrop {
+    background: $bg;
+}
+
+/* Menu styling */
+menu, .menu, .context-menu, popover, popover.background {
+    background-color: $bg_dark;
+    border: 1px solid $border;
+    color: $fg;
+}
+
+menu menuitem, .menu menuitem, popover modelbutton {
+    color: $fg;
+}
+
+menu menuitem:hover, .menu menuitem:hover, popover modelbutton:hover {
+    background-color: $accent;
+    color: #ffffff;
+}
+
+/* Sidebar (Caja, Nautilus, Thunar) */
+.sidebar, .sidebar-row, placessidebar, placessidebar row {
+    background-color: $bg_dark;
+    color: $fg;
+}
+
+.sidebar:selected, .sidebar-row:selected, placessidebar row:selected {
+    background-color: $accent;
+    color: #ffffff;
+}
+
+/* Main view area */
+.view, treeview, iconview, textview, list, listview {
+    background-color: $bg;
+    color: $fg;
+}
+
+.view:selected, treeview:selected, iconview:selected, list row:selected, listview > row:selected {
+    background-color: $accent;
+    color: #ffffff;
+}
+
+.view:hover, treeview:hover, iconview:hover, list row:hover, listview > row:hover {
+    background-color: $bg_light;
+}
+
+/* Tree view headers */
+treeview header button {
+    background: $bg_light;
+    border-color: $border;
+    color: $fg;
+}
+
+/* Scrollbars */
+scrollbar {
+    background-color: $bg;
+}
+
+scrollbar slider {
+    background-color: $bg_lighter;
+    border-radius: 4px;
+    min-width: 8px;
+    min-height: 8px;
+}
+
+scrollbar slider:hover {
+    background-color: $accent_dark;
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(to bottom, $bg_lighter, $bg_light);
+    border: 1px solid $border;
+    color: $fg;
+    padding: 4px 8px;
+}
+
+button:hover {
+    background: linear-gradient(to bottom, $bg_lightest, $bg_lighter);
+    border-color: $accent;
+}
+
+button:active, button:checked {
+    background: $accent;
+    color: #ffffff;
+}
+
+/* Entry fields */
+entry, spinbutton {
+    background-color: $bg_dark;
+    border: 1px solid $border;
+    color: $fg;
+}
+
+entry:focus, spinbutton:focus {
+    border-color: $accent;
+}
+
+/* Path bar / breadcrumbs */
+.path-bar button, .pathbar button, .linked button {
+    background: $bg_light;
+    border-color: $border;
+    color: $fg;
+}
+
+.path-bar button:hover, .pathbar button:hover {
+    background: $bg_lighter;
+}
+
+.path-bar button:checked, .pathbar button:checked {
+    background: $accent;
+    color: #ffffff;
+}
+
+/* Notebook tabs */
+notebook, notebook header {
+    background-color: $bg_dark;
+}
+
+notebook tab {
+    background-color: $bg_dark;
+    border-color: $border;
+    color: $fg_dim;
+    padding: 4px 8px;
+}
+
+notebook tab:checked {
+    background-color: $bg;
+    color: $fg;
+}
+
+/* Status bar */
+statusbar {
+    background-color: $bg_dark;
+    color: $fg_dim;
+}
+
+/* Tooltips */
+tooltip, tooltip.background {
+    background-color: $bg_dark;
+    border: 1px solid $border;
+    color: $fg;
+}
+
+/* Selection in text */
+*:selected, selection {
+    background-color: $accent;
+    color: #ffffff;
+}
+
+/* Rubberband selection */
+rubberband, .rubberband {
+    background-color: alpha($accent, 0.3);
+    border: 1px solid $accent;
+}
+
+/* Progress bars */
+progressbar trough {
+    background-color: $bg_dark;
+}
+
+progressbar progress {
+    background-color: $accent;
+}
+
+/* Separators */
+separator {
+    background-color: $border;
+}
+
+/* Links */
+*:link, link {
+    color: $accent_light;
+}
+EOF
+echo "GTK3 theme updated! (Caja, Thunar, etc.)"
+
+# Update folder icon colors
+ICON_THEME_DIR="$HOME/.local/share/icons/WallpaperFolders"
+PAPIRUS_DIRS=("/usr/share/icons/Papirus" "/usr/share/icons/Papirus-Dark")
+
+# Find Papirus installation
+PAPIRUS_SRC=""
+for dir in "${PAPIRUS_DIRS[@]}"; do
+    [[ -d "$dir" ]] && PAPIRUS_SRC="$dir" && break
+done
+
+if [[ -n "$PAPIRUS_SRC" ]]; then
+    # Create local icon theme
+    mkdir -p "$ICON_THEME_DIR/scalable/places"
+
+    # Create index.theme to inherit from Papirus
+    cat > "$ICON_THEME_DIR/index.theme" << ICONEOF
+[Icon Theme]
+Name=WallpaperFolders
+Comment=Papirus with wallpaper-colored folders
+Inherits=Papirus-Dark,Papirus,hicolor
+Directories=scalable/places
+
+[scalable/places]
+Size=64
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Places
+ICONEOF
+
+    # Papirus folder colors to replace (blue tones)
+    OLD_DARK="#4877b1"    # folder body
+    OLD_LIGHT="#5294e2"   # folder top/highlight
+
+    # Copy and recolor folder icons
+    for size_dir in "$PAPIRUS_SRC"/64x64/places "$PAPIRUS_SRC"/48x48/places "$PAPIRUS_SRC"/*/places; do
+        [[ -d "$size_dir" ]] || continue
+        for svg in "$size_dir"/folder*.svg; do
+            [[ -f "$svg" ]] || continue
+            fname=$(basename "$svg")
+            # Copy to our theme and replace colors
+            sed -e "s/$OLD_DARK/${accent_dark,,}/gi" \
+                -e "s/$OLD_LIGHT/${accent,,}/gi" \
+                "$svg" > "$ICON_THEME_DIR/scalable/places/$fname"
+        done
+        break  # Only need one size for scalable
+    done
+
+    # Update icon cache
+    gtk-update-icon-cache -f -q "$ICON_THEME_DIR" 2>/dev/null
+
+    # Set as icon theme via gsettings and config file
+    gsettings set org.gnome.desktop.interface icon-theme "WallpaperFolders" 2>/dev/null
+
+    # Refresh icons in running GTK apps by toggling the icon theme
+    # This forces GTK to reload icons without restarting apps
+    gsettings set org.gnome.desktop.interface icon-theme "hicolor" 2>/dev/null
+    gsettings set org.gnome.desktop.interface icon-theme "WallpaperFolders" 2>/dev/null
+
+    # Also update GTK settings.ini
+    GTK_SETTINGS="$HOME/.config/gtk-3.0/settings.ini"
+    if [[ -f "$GTK_SETTINGS" ]]; then
+        if grep -q "gtk-icon-theme-name" "$GTK_SETTINGS"; then
+            sed -i "s/gtk-icon-theme-name=.*/gtk-icon-theme-name=WallpaperFolders/" "$GTK_SETTINGS"
+        else
+            echo "gtk-icon-theme-name=WallpaperFolders" >> "$GTK_SETTINGS"
+        fi
+    fi
+
+    echo "Folder icons updated with accent color!"
+else
+    echo "Papirus icons not found, skipping folder colors"
+fi
 
 # Update Zed IDE theme
 ZED_THEMES_DIR="$HOME/.config/zed/themes"
