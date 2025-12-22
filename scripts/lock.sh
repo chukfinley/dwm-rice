@@ -5,6 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Fix external monitors (run after unlock)
 fix_monitors() {
+    # Wake displays first before configuring
+    xset dpms force on
+    sleep 1
+
     # Use autorandr if available, otherwise use xrandr auto
     if command -v autorandr &>/dev/null; then
         autorandr --change 2>/dev/null
@@ -19,7 +23,7 @@ fix_monitors() {
         xrandr --output DP-3-2 --auto --right-of DP-3-1 2>/dev/null
     fi
 
-    # Reset DPMS to ensure displays are on
+    # Force DPMS on again after configuration
     xset dpms force on
 
     # Restore wallpaper
