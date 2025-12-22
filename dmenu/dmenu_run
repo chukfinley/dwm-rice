@@ -1,2 +1,32 @@
 #!/bin/sh
-dmenu_path | dmenu "$@" | ${SHELL:-"/bin/sh"} &
+
+cachedir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
+flatpak_cache="$cachedir/dmenu_flatpak"
+
+# Get regular executables
+regular_apps=$(dmenu_path)
+
+# Get flatpak apps: "Name<tab>app.id"
+if command -v flatpak >/dev/null 2>&1; then
+    flatpak list --app --columns=name,application 2>/dev/null | sort -u > "$flatpak_cache"
+    flatpak_names=$(cut -f1 "$flatpak_cache")
+else
+    flatpak_names=""
+fi
+
+# Combine and show in dmenu
+selected=$(printf '%s\n%s' "$regular_apps" "$flatpak_names" | sort -u | dmenu "$@")
+
+[ -z "$selected" ] && exit 0
+
+# Check if it's a flatpak app
+if [ -f "$flatpak_cache" ]; then
+    app_id=$(awk -F'\t' -v name="$selected" '$1 == name {print $2; exit}' "$flatpak_cache")
+    if [ -n "$app_id" ]; then
+        flatpak run "$app_id" >/dev/null 2>&1 &
+        exit 0
+    fi
+fi
+
+# Otherwise run as regular command
+echo "$selected" | ${SHELL:-"/bin/sh"} &
