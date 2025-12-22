@@ -23,7 +23,9 @@ selected=$(printf '%s\n%s' "$regular_apps" "$flatpak_names" | sort -u | dmenu "$
 if [ -f "$flatpak_cache" ]; then
     app_id=$(awk -F'\t' -v name="$selected" '$1 == name {print $2; exit}' "$flatpak_cache")
     if [ -n "$app_id" ]; then
-        flatpak run "$app_id" >/dev/null 2>&1 &
+        flatpak run \
+            --env=_JAVA_AWT_WM_NONREPARENTING=1 \
+            "$app_id" >/dev/null 2>&1 &
         exit 0
     fi
 fi
