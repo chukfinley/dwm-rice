@@ -53,7 +53,9 @@ fi
 run "discord"
 run "veracrypt"
 run "flameshot"
-nohup signal-desktop --password-store="gnome-libsecret" >/dev/null 2>&1 &
+run "filen-desktop"
+run "element-desktop"
+run nohup signal-desktop --password-store="gnome-libsecret"
 #run dwall -s colony
 #run "telegram-desktop"
 
