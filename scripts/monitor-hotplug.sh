@@ -9,6 +9,11 @@ get_external_monitors() {
     xrandr --query | grep " connected" | grep -v "$LAPTOP" | cut -d' ' -f1
 }
 
+# Check if specific monitors are connected
+is_connected() {
+    xrandr --query | grep "^$1 connected" >/dev/null 2>&1
+}
+
 # Configure displays based on what's connected
 configure_displays() {
     local externals=($(get_external_monitors))
@@ -18,6 +23,15 @@ configure_displays() {
         # No external monitors - just laptop
         xrandr --output "$LAPTOP" --auto --primary
         echo "Laptop only mode"
+    elif is_connected "DP-3-1" && is_connected "DP-3-2"; then
+        # Dual ultrawide dock setup - specific positions for proper alignment
+        xrandr --output "$LAPTOP" --primary --mode 1920x1080 --pos 320x1080 --rotate normal \
+               --output HDMI-1 --off --output DP-1 --off --output DP-2 --off \
+               --output DP-3 --off --output DP-4 --off \
+               --output DP-3-1 --mode 2560x1080 --pos 0x0 --rotate normal \
+               --output DP-3-2 --mode 2560x1080 --pos 2560x0 --rotate normal \
+               --output DP-3-3 --off
+        echo "Dual ultrawide dock: DP-3-1 + DP-3-2 above laptop (centered)"
     elif (( count == 1 )); then
         # One external monitor above laptop
         xrandr --output "$LAPTOP" --auto --primary \

@@ -2050,10 +2050,20 @@ reloadcolors(void)
 	clrs[1][2] = xrdb_sel_border;
 
 	/* free old scheme and create new */
+	Clr *new_norm = drw_scm_create(drw, clrs[0], alphas[0], 3);
+	Clr *new_sel = drw_scm_create(drw, clrs[1], alphas[1], 3);
+
+	/* only apply if allocation succeeded */
+	if (!new_norm || !new_sel) {
+		free(new_norm);
+		free(new_sel);
+		return;
+	}
+
 	free(scheme[SchemeNorm]);
 	free(scheme[SchemeSel]);
-	scheme[SchemeNorm] = drw_scm_create(drw, clrs[0], alphas[0], 3);
-	scheme[SchemeSel] = drw_scm_create(drw, clrs[1], alphas[1], 3);
+	scheme[SchemeNorm] = new_norm;
+	scheme[SchemeSel] = new_sel;
 
 	/* update window borders */
 	for (m = mons; m; m = m->next) {
