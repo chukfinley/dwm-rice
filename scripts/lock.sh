@@ -2,6 +2,47 @@
 # Lock screen with slock and fix multi-monitor after unlock
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BT_CACHE="/tmp/.bt_headphones_cache"
+
+# Get connected Bluetooth audio devices and disconnect them
+disconnect_bt_headphones() {
+    # Find connected audio devices (headphones/headsets)
+    local connected=""
+    while IFS= read -r line; do
+        if [[ "$line" =~ Device\ ([0-9A-F:]+) ]]; then
+            local mac="${BASH_REMATCH[1]}"
+            # Check if it's an audio device (has audio UUID) and is connected
+            local info=$(bluetoothctl info "$mac" 2>/dev/null)
+            if echo "$info" | grep -q "Connected: yes" && \
+               echo "$info" | grep -qE "UUID.*Audio|UUID.*A2DP|UUID.*Headset"; then
+                connected="$connected $mac"
+            fi
+        fi
+    done < <(bluetoothctl devices 2>/dev/null)
+
+    # Save and disconnect
+    if [[ -n "$connected" ]]; then
+        echo "$connected" > "$BT_CACHE"
+        for mac in $connected; do
+            bluetoothctl disconnect "$mac" &>/dev/null
+        done
+    else
+        rm -f "$BT_CACHE"
+    fi
+}
+
+# Try to reconnect previously connected headphones (gentle, single attempt)
+reconnect_bt_headphones() {
+    [[ -f "$BT_CACHE" ]] || return
+
+    local saved=$(cat "$BT_CACHE")
+    rm -f "$BT_CACHE"
+
+    # Single reconnect attempt in background, non-blocking
+    for mac in $saved; do
+        (sleep 2 && bluetoothctl connect "$mac" &>/dev/null) &
+    done
+}
 
 # Fix external monitors (run after unlock)
 fix_monitors() {
@@ -30,10 +71,16 @@ fix_monitors() {
     [[ -x ~/.fehbg ]] && ~/.fehbg
 }
 
+# Disconnect Bluetooth headphones before locking
+disconnect_bt_headphones
+
 # Lock the screen
 slock
 
-# After unlock, fix displays
+# After unlock, try to reconnect headphones (gentle, single attempt)
+reconnect_bt_headphones
+
+# Fix displays
 fix_monitors
 
 # Signal dwm to refresh
