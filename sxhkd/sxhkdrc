@@ -66,9 +66,9 @@ super + e
 super + w
     ~/.config/dwm/scripts/lock.sh
 
-#Conky-toggle
+#Caja file manager
 super + c
-    conky-toggle
+    caja
 
 #Htop
 #super + h
@@ -86,9 +86,9 @@ super + r
 #super + t
 #    urxvt
 
-#Pavucontrol
+#VPN menu (eddie-cli)
 super + v
-    pavucontrol
+    ~/.config/dwm/scripts/vpn-menu.sh
 
 #Pragha
 #super + m
