@@ -10,3 +10,9 @@ slstatus/slstatus
 *~
 slock/slock
 slock/*.o
+
+# Build artifacts
+.dart_tool/
+
+# Log files
+moneroc

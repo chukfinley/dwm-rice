@@ -77,6 +77,19 @@ Add wallpapers to `~/Pictures/wal/` and log out. Select "dwm" from your display 
 - alacritty, rofi, xdotool
 - zsh, tmux (optional)
 
+## Post-Install: Zen Browser Memory Management
+
+Zen/Firefox can leak RAM over time. Configure auto-cleanup in `about:config`:
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `browser.tabs.unloadOnLowMemory` | `true` | Auto-unload tabs when RAM low |
+| `browser.low_commit_space_threshold_mb` | `4000` | Trigger at <4GB free |
+| `browser.tabs.min_inactive_duration_before_unload` | `300` | After 5 min inactive |
+| `browser.sessionhistory.max_entries` | `10` | Less history per tab |
+
+Manual cleanup: `about:memory` → "Minimize memory usage"
+
 ## License
 
 MIT

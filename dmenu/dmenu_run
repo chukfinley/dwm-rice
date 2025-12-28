@@ -30,5 +30,5 @@ if [ -f "$flatpak_cache" ]; then
     fi
 fi
 
-# Otherwise run as regular command
-echo "$selected" | ${SHELL:-"/bin/sh"} &
+# Otherwise run as regular command (redirect to avoid Electron EIO errors)
+setsid ${SHELL:-"/bin/sh"} -c "$selected" >/dev/null 2>&1 &
