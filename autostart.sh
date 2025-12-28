@@ -25,12 +25,13 @@ run "pamac-tray"
 #run "variety"
 run "xfce4-power-manager"
 run "blueberry-tray"
+run "blueman-applet"
 run "/usr/lib/xfce4/notifyd/xfce4-notifyd"
 run "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 # Kill existing instances before starting to prevent accumulation
 pkill -x picom; picom -b --config ~/.config/dwm/picom.conf &
 run "numlockx on"
-run "volumeicon"
+run "pasystray"
 pkill -x slstatus; slstatus &
 pkill -x sxhkd; sxhkd -c ~/.config/dwm/sxhkd/sxhkdrc &
 #run "nitrogen --restore"

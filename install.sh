@@ -40,7 +40,11 @@ sudo apt install -y \
     slock \
     xautolock \
     jq \
-    pulseaudio-utils
+    pulseaudio-utils \
+    blueman \
+    pasystray \
+    pavucontrol \
+    easyeffects
 
 echo ""
 echo "[2/6] Building and installing dwm..."

@@ -78,9 +78,9 @@ super + c
 super + x
     arcolinux-logout
 
-#Rofi theme selector
+#Voice input
 super + r
-    rofi-theme-selector
+    /home/user/.local/bin/fluistern
 
 #Urxvt
 #super + t
