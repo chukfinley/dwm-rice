@@ -56,7 +56,7 @@ run "veracrypt"
 run "flameshot"
 run "filen-desktop"
 run "element-desktop"
-run nohup signal-desktop --password-store="gnome-libsecret"
+pgrep -x signal-desktop || nohup signal-desktop --password-store="gnome-libsecret" &>/dev/null &
 #run dwall -s colony
 #run "telegram-desktop"
 
@@ -65,5 +65,8 @@ pkill -x xidlehook; pkill -x xautolock
 ~/.config/dwm/scripts/autolock.sh &
 
 # Start dwm
+# Small delay to let monitors settle and avoid race conditions
+sleep 1
+
 # Use the local build of dwm (with xrdb live color support)
 exec /home/user/.config/dwm/dwm
