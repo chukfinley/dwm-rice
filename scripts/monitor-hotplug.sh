@@ -25,7 +25,7 @@ configure_displays() {
         echo "Laptop only mode"
     elif is_connected "DP-3-1" && is_connected "DP-3-2"; then
         # Dual ultrawide dock setup - specific positions for proper alignment
-        xrandr --output "$LAPTOP" --primary --mode 1920x1080 --pos 320x1080 --rotate normal \
+        xrandr --output "$LAPTOP" --primary --mode 1920x1080 --pos 277x1080 --rotate normal \
                --output HDMI-1 --off --output DP-1 --off --output DP-2 --off \
                --output DP-3 --off --output DP-4 --off \
                --output DP-3-1 --mode 2560x1080 --pos 0x0 --rotate normal \
