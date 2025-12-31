@@ -24,7 +24,7 @@ run "nm-applet"
 run "pamac-tray"
 #run "variety"
 run "xfce4-power-manager"
-run "blueberry-tray"
+# blueberry-tray not installed, using blueman instead
 run "blueman-applet"
 run "/usr/lib/xfce4/notifyd/xfce4-notifyd"
 run "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
@@ -51,11 +51,11 @@ fi
 #run "insync start"
 #run "spotify"
 #run "ckb-next -b"
-run "discord"
+pgrep -x discord || discord --start-minimized &
 run "veracrypt"
 run "flameshot"
 run "filen-desktop"
-run "element-desktop"
+pgrep -x element-desktop || element-desktop --hidden &
 pgrep -x signal-desktop || nohup signal-desktop --password-store="gnome-libsecret" &>/dev/null &
 #run dwall -s colony
 #run "telegram-desktop"
